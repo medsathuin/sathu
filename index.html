@@ -1,0 +1,156 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Sathu: NEET PG and NEET UG Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF3EF;--card:#fff;--ink:#16211E;--mut:#5F706A;--pri:#0F3D36;--acc:#F2A33A;--ok:#DDF3E7;--okt:#14693F;--bad:#FADDD6;--badt:#A8321F;--line:#D3DDD7}
+@media(prefers-color-scheme:dark){:root{--bg:#0D1815;--card:#15251F;--ink:#E7EFEB;--mut:#93A79E;--pri:#2E8C7B;--ok:#16382B;--okt:#7FDBA8;--bad:#3E1D18;--badt:#F2A394;--line:#27403A}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 'Bricolage Grotesque',system-ui,sans-serif}
+#v{max-width:520px;margin:auto;padding:16px 16px 96px}h1{font-size:26px;margin:4px 0}h3{margin:20px 0 8px;font-size:16px}.m{color:var(--mut);margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:8px 0}.card b,.card span{display:block}.card span{color:var(--mut);font-size:13px}
+.hero{background:var(--pri);color:#fff;border-radius:22px;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.big{font-size:56px;font-weight:800;line-height:1;display:block}.hero span{font-size:13px;opacity:.85;display:block}.hero input{margin-top:8px;background:transparent;color:#fff;border:1px solid #fff5;border-radius:8px;padding:4px 6px;font:inherit;color-scheme:dark}
+.row{display:flex;gap:8px}.row>*{flex:1}button{font:inherit;cursor:pointer}
+.pri,.ghost,.opt{border-radius:10px;padding:11px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink)}.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}.opt.on{border-color:var(--pri);background:var(--ok)}.opt.ok{background:var(--ok);color:var(--okt);border-color:var(--okt)}.opt.bad{background:var(--bad);color:var(--badt);border-color:var(--badt)}
+.qt{font-size:17px;font-weight:600;margin:0 0 8px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.pal{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.pal i{font-style:normal;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:var(--card);cursor:pointer}.pal .ans{background:var(--pri);color:#fff}.pal .rv{outline:2px solid var(--acc)}.pal .cur{border:2px solid var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid .card{margin:0}
+.bar{height:8px;background:var(--line);border-radius:4px;margin-top:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+.player{background:#0b1512;color:#fff;border-radius:14px;padding:14px;margin:8px 0}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:20px;padding:4px 10px;margin:4px 4px 0 0;background:var(--card);color:var(--ink)}.chip.on{background:var(--acc);color:#16211E;border-color:var(--acc)}
+input.f,textarea,select{width:100%;font:inherit;border:1px solid var(--line);border-radius:10px;padding:9px;background:var(--card);color:var(--ink);margin:4px 0}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:none;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{font-size:13px;flex:1;border:0;background:none;padding:12px 0;color:var(--mut)}nav button.on{color:var(--pri);font-weight:800;box-shadow:inset 0 3px var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(min-width:900px){#v{max-width:980px;padding-top:76px}.grid{grid-template-columns:repeat(3,1fr)}nav{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--line)}nav button{box-shadow:none!important;max-width:150px}nav button.on{border-bottom:3px solid var(--acc)}}
+</style></head><body><main id="v"></main>
+<nav><button data-t="home">Home</button><button data-t="learn">Learn</button><button data-t="qbank">QBank</button><button data-t="tests">Tests</button><button data-t="planner">Planner</button><button data-t="notes">Notes</button><button data-t="me">Profile</button></nav>
+<script>
+// 1. Paste your Firebase web app config here (Project settings > Your apps > Web app). These values are meant to be public; security comes from firestore.rules.
+const FB={apiKey:'AIzaSyDwH-c7Z847Y7w88PW7YM7EZybDHZ_hjxw',authDomain:'sathuapp-3f085.firebaseapp.com',projectId:'sathuapp-3f085',storageBucket:'sathuapp-3f085.firebasestorage.app',messagingSenderId:'305156141842',appId:'1:305156141842:web:2455a612d6c24c937479cb'};
+let sb;
+async function initFB(){
+if(FB.apiKey.startsWith('YOUR_')){document.getElementById('v').innerHTML='<h1>Sathu is not connected yet</h1><p class="m">Open index.html in a text editor. Replace the YOUR_ values in the FB block with your Firebase web app config. Save the file and reload this page.</p>';throw new Error('Firebase config is missing')}
+const B='https://www.gstatic.com/firebasejs/10.12.2/';
+const[app0,au,fs]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+const a=au.getAuth(app0.initializeApp(FB)),db=fs.getFirestore(app0.getApp());
+const USER=['attempts','notes','tasks'],num=v=>typeof v=='string'&&/^\d+$/.test(v)?+v:v,wrap=u=>u?{id:u.uid,email:u.email}:null;
+const nice=e=>({'auth/invalid-credential':'Wrong email or password.','auth/email-already-in-use':'This email already has an account. Sign in instead.','auth/weak-password':'Password needs 6 or more characters.','auth/invalid-email':'Enter a valid email address.'}[e.code]||'Something went wrong ('+(e.code||e.message)+').');
+let seq=0;
+class Q{constructor(t){this.t=t;this.f=[];this.n=[];this.ord=null;this.lim=1e9;this.op=null;this.d=null;this.one=false}
+select(){return this}eq(f,v){this.f.push([f,v]);return this}is(f){this.n.push(f);return this}
+order(f,o){this.ord=[f,o&&o.ascending===false?-1:1];return this}limit(n){this.lim=n;return this}single(){this.one=true;return this}
+insert(d){this.op='insert';this.d=d;return this}update(d){this.op='update';this.d=d;return this}delete(){this.op='delete';return this}
+then(a,b){return this.run().then(a,b)}
+async run(){try{const t=this.t,u=a.currentUser,eqid=this.f.find(x=>x[0]=='id');
+if(this.op=='insert'){const out=await Promise.all([].concat(this.d).map(async r=>{const id=Date.now()*1000+(seq++%1000),o={...r,created_at:Date.now(),taken_at:Date.now()};if(USER.includes(t))o.user_id=u.uid;await fs.setDoc(fs.doc(db,t,String(id)),o);return{id,...o}}));return{data:this.one?out[0]:out,error:null}}
+if(this.op=='update'){await fs.updateDoc(fs.doc(db,t,String(eqid[1])),this.d);return{data:null,error:null}}
+if(this.op=='delete'){await fs.deleteDoc(fs.doc(db,t,String(eqid[1])));return{data:null,error:null}}
+let rows;
+if(eqid){const s=await fs.getDoc(fs.doc(db,t,String(eqid[1])));rows=s.exists()?[{id:num(s.id),...s.data()}]:[]}
+else{const c=this.f.map(([f,v])=>fs.where(f,'==',f.endsWith('_id')&&f!='user_id'?num(v):v));if(USER.includes(t))c.push(fs.where('user_id','==',u.uid));const s=await fs.getDocs(fs.query(fs.collection(db,t),...c));rows=s.docs.map(d=>({id:num(d.id),...d.data()}))}
+this.n.forEach(f=>rows=rows.filter(r=>r[f]==null));
+if(this.ord)rows.sort((x,y)=>(x[this.ord[0]]>y[this.ord[0]]?1:-1)*this.ord[1]);
+rows=rows.slice(0,this.lim);
+if(this.one)return rows[0]?{data:rows[0],error:null}:{data:null,error:{message:'Not found'}};
+return{data:rows,error:null}}catch(e){return{data:null,error:{message:nice(e)}}}}}
+sb={from:t=>new Q(t),auth:{
+async getSession(){await a.authStateReady();const u=wrap(a.currentUser);return{data:{session:u?{user:u}:null}}},
+onAuthStateChange(cb){au.onAuthStateChanged(a,u=>{const w=wrap(u);cb('',w?{user:w}:null)})},
+async signInWithPassword({email,password}){try{await au.signInWithEmailAndPassword(a,email,password);return{error:null}}catch(e){return{error:{message:nice(e)}}}},
+async signUp({email,password,options}){try{const c=await au.createUserWithEmailAndPassword(a,email,password);await fs.setDoc(fs.doc(db,'profiles',c.user.uid),{name:options?.data?.name||'Student',role:'student'});load();return{data:{session:true},error:null}}catch(e){return{error:{message:nice(e)}}}},
+signOut(){return au.signOut(a)}}}}
+const SUBJ={pg:["Anatomy","Physiology","Biochemistry","Pathology","Pharmacology","Microbiology","Forensic Medicine","PSM","ENT","Ophthalmology","Medicine","Surgery","OBG","Pediatrics","Orthopedics","Dermatology","Psychiatry","Anesthesia","Radiology"],ug:["Physics","Chemistry","Botany","Zoology"]};
+const DATES={pg:'2027-01-31',ug:'2027-05-02'};
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+let U=null,P=null,EX=localStorage.getItem('ex')||'pg',tab='home',lsub=null,cur=null,Z={},LEC=[],ATT=[],TASKS=[],HRS=6,tmr;
+const msg=t=>{const e=$('#msg');if(e)e.textContent=t||''};
+const dt=()=>localStorage.getItem('d'+EX)||DATES[EX],days=()=>Math.max(0,Math.ceil((new Date(dt())-new Date())/864e5));
+const ring=p=>`<svg width="88" height="88" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9" fill="none" stroke="#fff3" stroke-width="3"/><circle cx="18" cy="18" r="15.9" fill="none" stroke="#F2A33A" stroke-width="3" stroke-dasharray="${p} 100" stroke-linecap="round" transform="rotate(-90 18 18)"/><text x="18" y="20.5" text-anchor="middle" font-size="7" fill="#fff" font-weight="800">${p}%</text></svg>`;
+const chips=()=>`<div><button class="chip ${EX=='pg'?'on':''}" onclick="setEx('pg')">NEET PG</button><button class="chip ${EX=='ug'?'on':''}" onclick="setEx('ug')">NEET UG</button></div>`;
+function setEx(x){EX=x;localStorage.setItem('ex',x);lsub=null;cur=null;Z={};render();if(tab=='notes')loadRes();if(tab=='tests')loadTests()}
+
+async function boot(){const{data:{session}}=await sb.auth.getSession();U=session?.user||null;sb.auth.onAuthStateChange((_,s)=>{const n=s?.user||null;if(n?.id!==U?.id){U=n;load()}});load()}
+async function load(){if(!U){P=null;return render()}
+const[p,a,t,sv]=await Promise.all([sb.from('profiles').select('*').eq('id',U.id).single(),sb.from('attempts').select('*').order('taken_at',{ascending:false}).limit(20),sb.from('tasks').select('*').order('due'),sb.from('notes').select('*').eq('lecture_id',-1)]);
+P=p.data;ATT=(a.data||[]).filter(x=>x.exam==EX||true);TASKS=t.data||[];SAVED=new Map((sv.data||[]).map(n=>[+n.body,n.id]));loadRes()}
+async function auth(up){const e=$('#em').value.trim(),pw=$('#pw').value;msg('');
+const r=up?await sb.auth.signUp({email:e,password:pw,options:{data:{name:$('#nm').value.trim()||'Student'}}}):await sb.auth.signInWithPassword({email:e,password:pw});
+if(r.error)msg(r.error.message);else if(up&&!r.data.session)msg('Check your email to confirm your account, then sign in.')}
+const isT=()=>P?.role=='teacher';
+
+async function openSub(s){lsub=s;cur=null;const r=await sb.from('lectures').select('*').eq('exam',EX).eq('subject',s).order('created_at');LEC=r.data||[];render()}
+const ytId=u=>(String(u).match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/)||[])[1];
+async function play(id){const o=LEC.find(x=>x.id==id),yt=o.video_path.startsWith('http'),n=await sb.from('notes').select('*').eq('lecture_id',id).order('t');let url='';if(yt)url='https://www.youtube-nocookie.com/embed/'+ytId(o.video_path);else{const u=await sb.storage.from('lectures').createSignedUrl(o.video_path,3600);url=u.data?.signedUrl}cur={...o,yt,url,notes:n.data||[]};render()}
+const nl=()=>cur.notes.map(n=>`<div class="card" onclick="seek(${n.t})"><b>${fmt(n.t)}</b><span>${esc(n.body)}</span></div>`).join('')||'<p class="m">No notes yet. Pause the video and add one.</p>';
+async function addNote(){const x=$('#nt').value.trim();if(!x)return;const t=Math.floor($('#vd')?.currentTime||0),r=await sb.from('notes').insert({lecture_id:cur.id,t,body:x}).select().single();if(r.error)return msg(r.error.message);cur.notes.push(r.data);cur.notes.sort((a,b)=>a.t-b.t);$('#nt').value='';$('#nl').innerHTML=nl()}
+const seek=t=>{const e=$('#vd');if(!e)return;e.currentTime=t;e.play()};
+const spd=x=>{if(!$('#vd'))return;$('#vd').playbackRate=x;document.querySelectorAll('#sp .chip').forEach(c=>c.classList.toggle('on',c.dataset.x==x))};
+async function delLec(id){await sb.from('lectures').delete().eq('id',id);if(cur?.id==id)cur=null;openSub(lsub)}
+
+async function start(mode,tid,sub){msg('');let qq=sb.from('questions').select('*').eq('exam',EX);if(sub)qq=qq.eq('subject',sub);qq=tid?qq.eq('test_id',tid):qq.is('test_id',null);const r=await qq.limit(1000);const all=(r.data||[]).sort(()=>Math.random()-.5);
+if(!all.length){tab=mode=='test'?'tests':'qbank';render();return msg('No questions yet. A teacher can add them in Profile.')}
+const n=tid?all.length:Math.min(mode=='test'?20:10,all.length);Z={mode,qs:all.slice(0,n),q:0,sel:{},rv:new Set(),t:tid?(TESTS.find(x=>x.id==tid)?.minutes||30)*60:n*90,done:false};clearInterval(tmr);
+if(mode=='test')tmr=setInterval(()=>{Z.t--;const e=$('#tm');if(e)e.textContent=fmt(Z.t);if(Z.t<=0)finish()},1e3);render()}
+async function finish(){if(Z.done)return;Z.done=true;clearInterval(tmr);const score=Z.qs.filter((q,i)=>Z.sel[i]==q.answer).length;
+const bysub={};Z.qs.forEach((q,i)=>{const s=q.subject||'General',b=bysub[s]||(bysub[s]={c:0,t:0});b.t++;if(Z.sel[i]==q.answer)b.c++});await sb.from('attempts').insert({exam:EX,mode:Z.mode,score,total:Z.qs.length,bysub});const a=await sb.from('attempts').select('*').order('taken_at',{ascending:false}).limit(20);ATT=a.data||ATT;render()}
+function quizV(){if(Z.done)return resultV();const q=Z.qs[Z.q],t=Z.mode=='test',s=Z.sel[Z.q];
+let h=`<div class="top"><button class="ghost" onclick="Z={};clearInterval(tmr);render()">Exit</button><b>Q${Z.q+1} of ${Z.qs.length}</b>${t?`<b id="tm">${fmt(Z.t)}</b>`:`<button class="ghost" onclick="saveQ()">${SAVED.has(q.id)?'Saved':'Save'}</button>`}</div><div class="card"><p class="qt">${esc(q.question)}</p>`;
+q.options.forEach((o,i)=>{const c=!t&&s!=null?(i==q.answer?'ok':i==s?'bad':''):(s==i?'on':'');h+=`<button class="opt ${c}" onclick="Z.sel[Z.q]=${i};render()">${'ABCD'[i]}. ${esc(o)}</button>`});
+h+='</div>';if(!t&&s!=null)h+=`<div class="card"><b>Explanation</b><p>${esc(q.explanation||'No explanation added.')}</p></div>`;
+const last=Z.q==Z.qs.length-1;
+h+=`<div class="row"><button class="ghost" onclick="Z.q=Math.max(0,Z.q-1);render()">Previous</button>${t?`<button class="ghost" onclick="Z.rv.has(Z.q)?Z.rv.delete(Z.q):Z.rv.add(Z.q);render()">${Z.rv.has(Z.q)?'Unmark':'Mark for review'}</button>`:''}<button class="pri" onclick="${last?'finish()':'Z.q++;render()'}">${last?(t?'Submit':'Finish'):'Next'}</button></div>`;
+if(t)h+='<div class="pal">'+Z.qs.map((_,i)=>`<i class="${i==Z.q?'cur':''} ${Z.sel[i]!=null?'ans':''} ${Z.rv.has(i)?'rv':''}" onclick="Z.q=${i};render()">${i+1}</i>`).join('')+'</div>';return h}
+function resultV(){const c=Z.qs.filter((q,i)=>Z.sel[i]==q.answer).length,n=Z.qs.length;return`<h1>Your result</h1><div class="hero"><div><b class="big">${c}/${n}</b><span>${Object.keys(Z.sel).length-c} wrong · ${n-Object.keys(Z.sel).length} skipped</span></div>${ring(Math.round(c/n*100))}</div><h3>Review</h3>${Z.qs.map((q,i)=>`<div class="card"><b>${i+1}. ${esc(q.question)}</b><span>Answer: ${esc(q.options[q.answer])}</span><span>${esc(q.explanation||'')}</span></div>`).join('')}<button class="pri" style="width:100%" onclick="Z={};render()">Done</button>`}
+
+async function addT(){const t=$('#pt').value.trim();if(!t)return;const r=await sb.from('tasks').insert({title:t,due:$('#pd').value||null}).select().single();if(r.data)TASKS.push(r.data);render()}
+async function togT(id){const k=TASKS.find(x=>x.id==id);k.done=!k.done;await sb.from('tasks').update({done:k.done}).eq('id',id);render()}
+async function delT(id){TASKS=TASKS.filter(x=>x.id!=id);await sb.from('tasks').delete().eq('id',id);render()}
+async function impQ(){try{const arr=JSON.parse($('#bq').value);if(!Array.isArray(arr)||arr.some(x=>!x.q||!Array.isArray(x.o)||typeof x.a!='number'))throw Error('Each item needs q, o (options list), a (correct option number from 0), and optionally e and s.');
+const r=await sb.from('questions').insert(arr.map(x=>({exam:EX,subject:x.s||null,question:String(x.q),options:x.o.map(String),answer:x.a,explanation:x.e||null})));if(r.error)throw r.error;$('#bq').value='';msg('Added '+arr.length+' questions to NEET '+EX.toUpperCase()+'.')}catch(e){msg(e.message||'Could not save. Check the JSON.')}}
+
+const V={
+home:()=>{const n=ATT.length,tot=ATT.reduce((a,x)=>a+x.total,0),acc=tot?Math.round(ATT.reduce((a,x)=>a+x.score,0)/tot*100):0;
+return`<h1>Hello, ${esc(P?.name||'Student')}</h1>${chips()}<div class="hero"><div><b class="big">${days()}</b><span>days to NEET ${EX.toUpperCase()}</span><input type="date" value="${dt()}" onchange="localStorage.setItem('d'+EX,this.value);render()" aria-label="Exam date"></div>${ring(acc)}</div>
+<div class="row" style="margin-top:8px"><div class="card"><b>${streak()} days</b><span>Study streak</span></div><div class="card"><b>${n?ATT[0].score+' / '+ATT[0].total:'None yet'}</b><span>Latest score</span></div></div>
+${wk()}${liveV()}<h3>Next up</h3><div class="card" onclick="tab='learn';render()"><b>Watch a lecture</b><span>Pick a subject</span></div><div class="card" onclick="start('prac')"><b>Practise 10 questions</b><span>With explanations</span></div>`},
+learn:()=>{if(!lsub)return`<h1>Learn</h1>${chips()}<div class="grid" style="margin-top:8px">${SUBJ[EX].map(s=>`<div class="card" onclick="openSub('${s}')"><b>${s}</b><span>Open lectures</span></div>`).join('')}</div>`;
+return`<button class="ghost" onclick="lsub=null;cur=null;render()">Back</button><h1>${lsub}</h1>${isT()?`<input id="yt2" class="f" placeholder="Lecture title"><input id="yt" class="f" placeholder="Paste a YouTube link (unlisted works)"><button class="ghost" onclick="addYT()">Add YouTube lecture</button>`:''}<p id="msg" class="m"></p>
+${cur?`<div class="player"><b>${esc(cur.title)}</b>${cur.yt?`<iframe src="${cur.url}" allowfullscreen style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px;margin-top:8px"></iframe>`:`<video id="vd" src="${cur.url}" controls playsinline style="width:100%;border-radius:10px;margin-top:8px"></video>`}<div id="sp">${[.75,1,1.25,1.5,2].map(x=>`<button class="chip ${x==1?'on':''}" data-x="${x}" onclick="spd(${x})">${x}x</button>`).join('')}</div></div><textarea id="nt" rows="2" placeholder="Note for the current time"></textarea><button class="pri" onclick="addNote()">Add note</button><div id="nl">${nl()}</div>`:''}
+<h3>Lectures</h3>${LEC.map(x=>`<div class="card" onclick="play('${x.id}')"><b>${esc(x.title)}</b>${isT()?`<span><u onclick="event.stopPropagation();delLec('${x.id}')">Remove</u></span>`:''}</div>`).join('')||'<p class="m">No lectures here yet.</p>'}`},
+qbank:()=>`<h1>QBank</h1>${chips()}<p class="m">Ten random NEET ${EX.toUpperCase()} questions with explanations.</p><p id="msg" class="m"></p><button class="pri" style="width:100%" onclick="start('prac')">Start practice</button>`,
+tests:()=>`<h1>Tests</h1>${chips()}<p class="m">Up to 20 timed questions with a palette and review marks. Your score is saved.</p><p id="msg" class="m"></p><button class="pri" style="width:100%" onclick="start('test')">Start test</button>`,
+planner:()=>{const sl=SUBJ[EX],h=HRS*days();return`<h1>Planner</h1>${chips()}<p class="m">${days()} days to NEET ${EX.toUpperCase()}.</p><div class="card"><b>Daily study hours: ${HRS}</b><input type="range" min="2" max="14" value="${HRS}" onchange="HRS=+this.value;render()" style="width:100%" aria-label="Daily study hours"><span>${h} study hours until the exam</span></div><h3>Hours per subject</h3>${sl.map(s=>`<div class="card"><b>${s}: ${Math.round(h/sl.length)} hrs</b></div>`).join('')}
+<h3>Your tasks</h3><input id="pt" class="f" placeholder="New task"><div class="row"><input id="pd" class="f" type="date"><button class="pri" onclick="addT()">Add task</button></div>${TASKS.map(k=>`<div class="card" style="display:flex;gap:10px;align-items:center"><input type="checkbox" ${k.done?'checked':''} onchange="togT(${k.id})"><div style="flex:1;${k.done?'text-decoration:line-through;opacity:.6':''}"><b>${esc(k.title)}</b><span>${k.due||'No date'}</span></div><button class="ghost" onclick="delT(${k.id})">Delete</button></div>`).join('')||'<p class="m">No tasks yet.</p>'}`},
+me:()=>`<h1>${esc(P?.name||'Student')}</h1><p class="m">${esc(U.email)} · ${isT()?'Teacher':'Student'}</p><h3>Recent attempts</h3>${ATT.map(a=>`<div class="card"><b>${a.score} / ${a.total} · NEET ${a.exam.toUpperCase()} ${a.mode=='test'?'test':'practice'}</b><span>${new Date(a.taken_at).toLocaleDateString()}</span></div>`).join('')||'<p class="m">No attempts yet.</p>'}
+${isT()?`<h3>Question bank: add to NEET ${EX.toUpperCase()}</h3>${chips()}<textarea id="bq" rows="6" placeholder='[{"q":"Question","o":["A","B","C","D"],"a":0,"e":"Explanation","s":"Subject"}]'></textarea><button class="pri" onclick="impQ()">Add questions</button><p id="msg" class="m"></p>`:''}
+<h3>Account</h3><button class="ghost" onclick="sb.auth.signOut()">Sign out</button>`};
+const authV=()=>`<h1>Sathu</h1><p class="qt">NEET PG and NEET UG prep: lectures, notes, QBank, tests and planner.</p><input id="nm" class="f" placeholder="Your name (for new accounts)"><input id="em" class="f" type="email" placeholder="Email" autocomplete="email"><input id="pw" class="f" type="password" placeholder="Password (6+ characters)" autocomplete="current-password"><div class="row" style="margin-top:6px"><button class="pri" onclick="auth(false)">Sign in</button><button class="ghost" onclick="auth(true)">Create account</button></div><p id="msg" class="m"></p>`;
+function render(){$('nav').style.display=U?'flex':'none';document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==tab));$('#v').innerHTML=!U?authV():Z.mode?quizV():V[tab]();window.scrollTo(0,0)}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{Z={};clearInterval(tmr);lsub=null;cur=null;tab=b.dataset.t;render();if(tab=='notes'||tab=='home')loadRes();if(tab=='tests')loadTests()});
+let RES=[],TESTS=[];
+async function addYT(){const l=$('#yt').value.trim();if(!ytId(l))return msg('Paste a full YouTube link.');const r=await sb.from('lectures').insert({exam:EX,subject:lsub,title:$('#yt2').value.trim()||'Lecture '+(LEC.length+1),video_path:l});if(r.error)return msg(r.error.message);openSub(lsub)}
+async function loadRes(){const r=await sb.from('resources').select('*').eq('exam',EX).order('created_at',{ascending:false});RES=r.data||[];render()}
+function openRes(i){window.open(RES[i].path,'_blank','noopener')}
+async function addPdf(){const l=$('#rl').value.trim();if(!/^https?:\/\//.test(l))return msg('Paste a full link starting with https://');const r=await sb.from('resources').insert({exam:EX,subject:$('#rs').value,title:$('#rt').value.trim()||'Notes',path:l,kind:'link'});if(r.error)return msg(r.error.message);loadRes()}
+async function delRes(i){await sb.from('resources').delete().eq('id',RES[i].id);loadRes()}
+async function loadTests(){const r=await sb.from('tests').select('*').eq('exam',EX).order('created_at',{ascending:false});TESTS=r.data||[];render()}
+async function delTest(id){const r=await sb.from('questions').select('*').eq('exam',EX).eq('test_id',id);for(const q of r.data||[])await sb.from('questions').delete().eq('id',q.id);await sb.from('tests').delete().eq('id',id);loadTests()}
+async function mkTest(){try{const arr=JSON.parse($('#bq').value),title=$('#tt').value.trim();if(!title)throw Error('Enter a test name.');if(!Array.isArray(arr)||!arr.length||arr.some(x=>!x.q||!Array.isArray(x.o)||typeof x.a!='number'))throw Error('Each question needs q, o (options list) and a (correct option number from 0).');
+const t=await sb.from('tests').insert({exam:EX,title,minutes:+$('#tm2').value||30}).select().single();if(t.error)throw t.error;
+const r=await sb.from('questions').insert(arr.map(x=>({exam:EX,subject:x.s||null,question:String(x.q),options:x.o.map(String),answer:x.a,explanation:x.e||null,test_id:t.data.id})));if(r.error)throw r.error;loadTests()}catch(e){msg(e.message||'Could not create the test.')}}
+async function addQ(){const o=[0,1,2,3].map(i=>$('#so'+i).value.trim());while(o.length&&!o[o.length-1])o.pop();const q=$('#sq').value.trim(),a=+$('#sa').value;if(!q||o.length<2||o.some(x=>!x)||a>=o.length)return msg('Enter the question, fill options in order, and pick a correct option that exists.');const r=await sb.from('questions').insert({exam:EX,question:q,options:o,answer:a,explanation:$('#se').value.trim()||null});if(!r.error){['sq','so0','so1','so2','so3','se'].forEach(i=>$('#'+i).value='')}msg(r.error?r.error.message:'Question added.')}
+V.notes=()=>`<h1>Notes</h1>${chips()}<p class="m">PDF notes shared by your teachers.</p><p id="msg" class="m"></p>${isT()?`<div class="card"><b>Share a PDF</b><select id="rs" class="f">${SUBJ[EX].map(s=>`<option>${s}</option>`).join('')}</select><input id="rt" class="f" placeholder="Title"><input id="rl" class="f" placeholder="Paste the PDF share link (Google Drive: Anyone with the link)"><button class="pri" onclick="addPdf()">Share PDF</button></div><div class="card"><b>Schedule a live class</b><input id="lt" class="f" placeholder="Class title"><input id="lw" class="f" placeholder="Date and time, for example 30 Oct, 7 PM"><input id="ll" class="f" placeholder="Join link (YouTube Live, Zoom or Meet)"><button class="pri" onclick="addLive()">Add live class</button></div>`:''}${RES.map((r,i)=>r.kind=='live'?'':`<div class="card" onclick="openRes(${i})"><b>${esc(r.title)}</b><span>${esc(r.subject||'')}${isT()?` · <u onclick="event.stopPropagation();delRes(${i})">Remove</u>`:''}</span></div>`).join('')||'<p class="m">No notes shared yet.</p>'}`;
+V.tests=()=>`<h1>Tests</h1>${chips()}<p class="m">Timed tests with a palette and review marks. Scores are saved.</p><p id="msg" class="m"></p><button class="pri" style="width:100%" onclick="start('test')">Quick random test (20 questions)</button><h3>Tests from your teacher</h3>${TESTS.map(t=>`<div class="card" onclick="start('test',${t.id})"><b>${esc(t.title)}</b><span>${t.minutes} minutes · tap to start${isT()?` · <u onclick="event.stopPropagation();delTest(${t.id})">Remove</u>`:''}</span></div>`).join('')||'<p class="m">No tests yet.</p>'}${isT()?`<h3>Create a test</h3><input id="tt" class="f" placeholder="Test name"><input id="tm2" class="f" type="number" placeholder="Minutes, for example 60"><textarea id="bq" rows="5" placeholder='[{"q":"Question","o":["A","B","C","D"],"a":0,"e":"Explanation"}]'></textarea><button class="pri" onclick="mkTest()">Create test</button>`:''}`;
+const me1=V.me;V.me=()=>me1()+(isT()?`<h3>Add one question</h3><textarea id="sq" rows="2" placeholder="Question"></textarea>${[0,1,2,3].map(i=>`<input id="so${i}" class="f" placeholder="Option ${'ABCD'[i]}">`).join('')}<select id="sa">${[0,1,2,3].map(i=>`<option value="${i}">Correct answer: ${'ABCD'[i]}</option>`).join('')}</select><textarea id="se" rows="2" placeholder="Explanation (optional)"></textarea><button class="pri" onclick="addQ()">Add question</button>`:'');
+let SAVED=new Map();
+async function saveQ(){const q=Z.qs[Z.q];if(SAVED.has(q.id)){await sb.from('notes').delete().eq('id',SAVED.get(q.id));SAVED.delete(q.id)}else{const r=await sb.from('notes').insert({lecture_id:-1,t:0,body:String(q.id)}).select().single();if(r.data)SAVED.set(q.id,r.data.id)}render()}
+async function startSaved(){msg('');const qs=[];for(const id of SAVED.keys()){const r=await sb.from('questions').select('*').eq('id',id).single();if(r.data)qs.push(r.data)}if(!qs.length)return msg('No saved questions yet. Tap Save while practising.');Z={mode:'prac',qs,q:0,sel:{},rv:new Set(),t:0,done:false};render()}
+async function addLive(){const l=$('#ll').value.trim();if(!/^https?:\/\//.test(l))return msg('Paste a full link starting with https://');const r=await sb.from('resources').insert({exam:EX,subject:$('#lw').value.trim(),title:$('#lt').value.trim()||'Live class',path:l,kind:'live'});if(r.error)return msg(r.error.message);loadRes()}
+function stats(){const m={};ATT.filter(a=>a.exam==EX&&a.bysub).forEach(a=>Object.entries(a.bysub).forEach(([s,v])=>{const b=m[s]||(m[s]={c:0,t:0});b.c+=v.c;b.t+=v.t}));return Object.entries(m).map(([s,v])=>[s,Math.round(v.c/v.t*100),v.t]).sort((x,y)=>x[1]-y[1])}
+function streak(){const d=new Set(ATT.map(a=>new Date(a.taken_at).toDateString()));let n=0,x=new Date();if(!d.has(x.toDateString()))x.setDate(x.getDate()-1);while(d.has(x.toDateString())){n++;x.setDate(x.getDate()-1)}return n}
+const wk=()=>{const s=stats();return s.length?`<h3>Weak areas</h3>${s.slice(0,3).map(x=>`<div class="card" onclick="tab='qbank';render()"><b>${esc(x[0])}: ${x[1]}%</b><div class="bar"><i style="width:${x[1]}%"></i></div><span>${x[2]} questions attempted · tap to practise</span></div>`).join('')}`:''};
+const liveV=()=>{const L=RES.map((r,i)=>r.kind=='live'?`<div class="card" onclick="openRes(${i})"><b>${esc(r.title)}</b><span>${esc(r.subject||'')} · tap to join${isT()?` · <u onclick="event.stopPropagation();delRes(${i})">Remove</u>`:''}</span></div>`:'').join('');return L?`<h3>Live classes</h3>${L}`:''};
+V.qbank=()=>`<h1>QBank</h1>${chips()}<p class="m">Practise by subject with explanations.</p><p id="msg" class="m"></p><button class="pri" style="width:100%" onclick="start('prac')">Mixed practice (10 questions)</button><button class="ghost" style="width:100%;margin-top:6px" onclick="startSaved()">Saved questions (${SAVED.size})</button><h3>By subject</h3><div class="grid">${SUBJ[EX].map(s=>`<div class="card" onclick="start('prac',null,'${s}')"><b>${s}</b><span>10 questions</span></div>`).join('')}</div>`;
+initFB().then(boot);
+</script></body></html>
